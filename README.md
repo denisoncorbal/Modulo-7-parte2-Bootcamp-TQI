@@ -1,4 +1,7 @@
 <h2>Implementações adicionais</h2>
+
+Tópicos:
+
 * Testes BDD para criação de nova funcionalidade de PUT para update e DELETE para todos os registros.
 * Implementação posterior do código funcional.
 
