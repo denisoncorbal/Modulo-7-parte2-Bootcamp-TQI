@@ -202,6 +202,55 @@ public class BeerServiceTest {
 
         assertThrows(BeerNotFoundException.class, () -> beerService.increment(INVALID_BEER_ID, quantityToIncrement));
     }
+
+    // Testes pessoais ---------------------------------------------------------------------------
+
+    @Test
+    void whenExclusionAllIsCalledThenAllStockShouldBeDeleted(){
+        // when
+        doNothing().when(beerRepository).deleteAll();
+
+        // then
+        beerService.deleteAll();
+
+        verify(beerRepository, times(1)).deleteAll();
+    }
+
+    @Test
+    void whenUpdateBeerIsCalledWithExistsBeerThenABeerShouldBeUpdated(){
+        // given
+        BeerDTO expectedBeerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
+        Beer expectedSavedBeer = beerMapper.toModel(expectedBeerDTO);
+
+        // when
+        when(beerRepository.findById(expectedBeerDTO.getId())).thenReturn(Optional.of(expectedSavedBeer));
+        when(beerRepository.save(expectedSavedBeer)).thenReturn(expectedSavedBeer);
+
+        //then
+        BeerDTO updatedBeerDTO = beerService.updateBeer(1L, expectedBeerDTO);
+
+        assertThat(updatedBeerDTO.getId(), is(equalTo(expectedBeerDTO.getId())));
+        assertThat(updatedBeerDTO.getName(), is(equalTo(expectedBeerDTO.getName())));
+        assertThat(updatedBeerDTO.getQuantity(), is(equalTo(expectedBeerDTO.getQuantity())));
+    }
+
+    @Test
+    void whenUpdateBeerIsCalledWithNotExistsBeerThenABeerShouldBeCreated(){
+        // given
+        BeerDTO expectedBeerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
+        Beer expectedSavedBeer = beerMapper.toModel(expectedBeerDTO);
+
+        // when
+        when(beerRepository.findById(expectedBeerDTO.getId())).thenReturn(Optional.empty());
+        when(beerRepository.save(expectedSavedBeer)).thenReturn(expectedSavedBeer);
+
+        //then
+        BeerDTO createdBeerDTO = beerService.updateBeer(INVALID_BEER_ID, expectedBeerDTO);
+
+        assertThat(createdBeerDTO.getId(), is(equalTo(expectedBeerDTO.getId())));
+        assertThat(createdBeerDTO.getName(), is(equalTo(expectedBeerDTO.getName())));
+        assertThat(createdBeerDTO.getQuantity(), is(equalTo(expectedBeerDTO.getQuantity())));
+    }
 //
 //    @Test
 //    void whenDecrementIsCalledThenDecrementBeerStock() throws BeerNotFoundException, BeerStockExceededException {

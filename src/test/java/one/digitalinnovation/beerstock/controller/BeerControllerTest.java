@@ -28,6 +28,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.mock.http.server.reactive.MockServerHttpRequest.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -193,6 +194,67 @@ public class BeerControllerTest {
                 .andExpect(jsonPath("$.type", is(beerDTO.getType().toString())))
                 .andExpect(jsonPath("$.quantity", is(beerDTO.getQuantity())));
     }
+
+    // Testes adicionados --------------------------------------------------------------------------
+
+    @Test
+    void whenPUTIsCalledWithExistsIDThenABeerIsUpdated() throws Exception {
+        // given
+        BeerDTO beerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
+
+        // when
+        when(beerService.updateBeer(VALID_BEER_ID, beerDTO)).thenReturn(beerDTO);
+
+        // then
+        mockMvc.perform(put(BEER_API_URL_PATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(beerDTO)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.name", is(beerDTO.getName())))
+            .andExpect(jsonPath("$.brand", is(beerDTO.getBrand())))
+            .andExpect(jsonPath("$.type", is(beerDTO.getType().toString())));
+    }
+
+    @Test
+    void whenPUTIsCalledWithoutRequiredFieldThenAnErrorIsReturned() throws Exception {
+        // given
+        BeerDTO beerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
+        beerDTO.setBrand(null);
+
+        // then
+        mockMvc.perform(put(BEER_API_URL_PATH + "/" + VALID_BEER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(beerDTO)))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void whenPUTIsCalledWithNotExistsIdThenABeerIsCreated() throws Exception {
+        //when
+        BeerDTO beerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
+        when(beerService.updateBeer(INVALID_BEER_ID, beerDTO)).thenReturn(beerDTO);
+
+        // then
+        mockMvc.perform(put(BEER_API_URL_PATH + "/" + INVALID_BEER_ID)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isCreated());
+    }
+
+    @Test
+    void whenDELETEIsCalledWithoutIdThenNoContentStatusIsReturned() throws Exception {
+        // given
+        BeerDTO beerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
+
+        //when
+        doNothing().when(beerService).deleteAll(beerDTO.getId());
+
+        // then
+        mockMvc.perform(MockMvcRequestBuilders.delete(BEER_API_URL_PATH)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNoContent());
+    }
+
+
 
 //    @Test
 //    void whenPATCHIsCalledToIncrementGreatherThanMaxThenBadRequestStatusIsReturned() throws Exception {
