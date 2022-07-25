@@ -44,4 +44,18 @@ public interface BeerControllerDocs {
             @ApiResponse(code = 404, message = "Beer with given id not found.")
     })
     void deleteById(@PathVariable Long id) throws BeerNotFoundException;
+
+    @ApiOperation(value = "Beer update operation")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Success update beer"),
+        @ApiResponse(code = 201, message = "Success beer creation"),
+        @ApiResponse(code = 400, message = "Missing required fields or wrong field range value.")
+    })
+    BeerDTO updateBeer(@RequestBody @Valid BeerDTO beerDTO, @PathVariable Long id);
+
+    @ApiOperation(value = "Delete all bears")
+    @ApiResponses(value = {
+        @ApiResponse(code = 204, message = "Success deleting all bears"),
+    })
+    void deleteAll();
 }

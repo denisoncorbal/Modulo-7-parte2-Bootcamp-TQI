@@ -223,7 +223,6 @@ public class BeerServiceTest {
         Beer expectedSavedBeer = beerMapper.toModel(expectedBeerDTO);
 
         // when
-        when(beerRepository.findById(expectedBeerDTO.getId())).thenReturn(Optional.of(expectedSavedBeer));
         when(beerRepository.save(expectedSavedBeer)).thenReturn(expectedSavedBeer);
 
         //then
@@ -241,7 +240,6 @@ public class BeerServiceTest {
         Beer expectedSavedBeer = beerMapper.toModel(expectedBeerDTO);
 
         // when
-        when(beerRepository.findById(expectedBeerDTO.getId())).thenReturn(Optional.empty());
         when(beerRepository.save(expectedSavedBeer)).thenReturn(expectedSavedBeer);
 
         //then

@@ -246,7 +246,7 @@ public class BeerControllerTest {
         BeerDTO beerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
 
         //when
-        doNothing().when(beerService).deleteAll(beerDTO.getId());
+        doNothing().when(beerService).deleteAll();
 
         // then
         mockMvc.perform(MockMvcRequestBuilders.delete(BEER_API_URL_PATH)

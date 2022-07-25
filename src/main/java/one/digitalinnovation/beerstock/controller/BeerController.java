@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -55,4 +56,16 @@ public class BeerController implements BeerControllerDocs {
     public BeerDTO increment(@PathVariable Long id, @RequestBody @Valid QuantityDTO quantityDTO) throws BeerNotFoundException, BeerStockExceededException {
         return beerService.increment(id, quantityDTO.getQuantity());
     }
+
+    @PutMapping("/{id}")
+    public BeerDTO updateBeer(@RequestBody @Valid BeerDTO beerDTO, @PathVariable Long id){
+        return beerService.updateBeer(id, beerDTO);
+    }
+
+    @DeleteMapping("/")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAll(){
+        beerService.deleteAll();
+    }
+
 }

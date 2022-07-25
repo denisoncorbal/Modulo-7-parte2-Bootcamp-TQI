@@ -69,4 +69,26 @@ public class BeerService {
         }
         throw new BeerStockExceededException(id, quantityToIncrement);
     }
+
+    public void deleteAll() {
+        beerRepository.deleteAll();
+    }
+
+    public BeerDTO updateBeer(long id, BeerDTO beerDTO) {
+        Beer beer = beerMapper.toModel(beerDTO);
+
+        return beerMapper.toDTO(
+            beerRepository.findById(id).map(
+                beerExists -> {
+                    beerExists.setName(beer.getName());
+                    beerExists.setQuantity(beer.getQuantity());
+                    beerExists.setBrand(beer.getBrand());
+                    beerExists.setMax(beer.getMax());
+                    beerExists.setType(beer.getType());
+                    return beerRepository.save(beerExists);
+            }).orElseGet(()->{
+                beer.setId(id);
+                return beerRepository.save(beer);
+        }));
+    }
 }
